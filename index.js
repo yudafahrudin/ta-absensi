@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 // Component
 const UserRoutes = require('./routes/users');
 const AuthRoutes = require('./routes/auth');
+const SchedulesRoutes = require('./routes/schedules');
 
 // Body Parser Muddleware
 App.use(bodyParser.json({ extended: true }));
@@ -20,6 +21,7 @@ App.use(morgan('dev'));
 // Route list
 App.use('/api/users', UserRoutes);
 App.use('/api/auth', AuthRoutes);
+App.use('/api/schedules', SchedulesRoutes);
 
 // Defined not found
 App.use((req, res) => {

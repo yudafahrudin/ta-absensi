@@ -4,14 +4,14 @@ const Auth = require('../helper/auth');
 const models = require('../models');
 const bcrypt = require('bcryptjs');
 
-// Current user
-router.get('/current', Auth.verifyToken, async (req, res) => {
-  const id = Auth.getDecode(req).jwtUser.id || null;
-  await models.users
-    .findOne({
-      attributes: { exclude: ['password'] },
+// Current user schedules
+router.get('/mobile', Auth.verifyToken, async (req, res) => {
+  const userId = Auth.getDecode(req).jwtUser.id || null;
+  await models.schedules
+    .findAll({
+      include: [{ model: models.subjects }, { model: models.schoolclass }],
       where: {
-        id,
+        userId,
       },
     })
     .then(respons => {
@@ -45,46 +45,35 @@ router.get('/:id', Auth.verifyToken, async (req, res) => {
 });
 
 // CREATE
-router.post('/create', Auth.verifyToken, (req, res) => {
-  const {
-    name,
-    email,
-    username,
-    unique_number,
-    password,
-    type,
-    schoolclassId,
-    address,
-  } = req.body;
-  let usernameChekcer = username || unique_number;
+router.post('/create', Auth.verifyToken, async (req, res) => {
+  const { schoolclassId, subjectId, userId, startAt, finishAt } = req.body;
+  //   let usernameChekcer = username || unique_number;
   try {
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(password, salt, async (err, hash) => {
-        await models.users
-          .create({
-            name,
-            email,
-            username: usernameChekcer,
-            unique_number,
-            password: hash,
-            type,
-            schoolclassId,
-            address,
-          })
-          .then(respons =>
-            res.json({
-              status: 'ok',
-              data: respons,
-            }),
-          )
-          .catch(err => {
-            res.json({
-              status: 'error',
-              message: err.message,
-            });
-          });
+    // bcrypt.genSalt(10, (err, salt) => {
+    //   bcrypt.hash(password, salt, async (err, hash) => {
+
+    //   });
+    // });
+    await models.schedules
+      .create({
+        schoolclassId,
+        subjectId,
+        userId,
+        startAt,
+        finishAt,
+      })
+      .then(respons =>
+        res.json({
+          status: 'ok',
+          data: respons,
+        }),
+      )
+      .catch(err => {
+        res.json({
+          status: 'error',
+          message: err.message,
+        });
       });
-    });
   } catch (err) {
     res.json({
       status: 'error',

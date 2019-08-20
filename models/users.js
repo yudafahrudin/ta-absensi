@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id',
         },
       },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {},
   );
@@ -38,6 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     users.belongsTo(models.schoolclass, {
       foreignKey: 'schoolclassId',
     });
+    users.hasMany(models.schedules);
   };
   return users;
 };
